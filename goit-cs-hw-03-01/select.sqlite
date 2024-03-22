@@ -1,0 +1,69 @@
+#Отримати всі завдання певного користувача
+SELECT *
+FROM tasks
+WHERE user_id = 1;
+
+#Вибрати завдання за певним статусом
+SELECT *
+FROM tasks
+WHERE status_id = (SELECT id FROM status WHERE name = 'new');
+
+#Оновити статус конкретного завдання
+UPDATE tasks
+SET status_id = (SELECT id FROM status WHERE name = 'in progress');
+WHERE id = 1;
+
+#Отримати список користувачів, які не мають жодного завдання
+SELECT *
+FROM users
+WHERE id NOT IN (SELECT user_id FROM status);
+
+#Додати нове завдання для конкретного користувача
+INSERT INTO tasks (title, discription, status_id, user_id)
+VALUES ('Нове завдання', 'Опис нового завдання', (SELECT id FROM status WHERE name = 'new'),1);
+
+#Отримати всі завдання, які ще не завершено
+SELECT *
+FROM tasks
+WHERE status_id IN (1,2);
+
+#Видалити конкретне завдання
+DELETE FROM tasks WHERE id = 4;
+
+#Знайти користувачів з певною електронною поштою
+SELECT *
+FROM users
+WHERE email LIKE '%@example%';
+
+#Оновити ім'я користувача
+UPDATE users SET name = 'Pasha Rogov'
+WHERE name = 'Kelly Turner';
+
+#Отримати кількість завдань для кожного статусу
+SELECT count(title) as titles
+FROM tasks
+GROUP BY status_id;
+
+#Отримати завдання, які призначені користувачам з певною доменною частиною електронної пошти.
+SELECT *
+FROM users AS u
+LEFT JOIN tasks AS t ON t.user_id = u.id
+WHERE email LIKE '%@example.com';
+
+#Отримати список завдань, що не мають опису.
+SELECT title
+FROM tasks
+WHERE IS NULL OR discription ='';
+
+#Вибрати користувачів та їхні завдання, які є у статусі 'in progress'
+SELECT u.fullname, t.title
+FROM users AS u
+INNER JOIN tasks AS t ON t.user_id = u.id
+LEFT JOIN status AS s ON s.id = t.status_id
+WHERE s.name = 'in progress';
+
+#Отримати користувачів та кількість їхніх завдань.
+SELECT u.fullname, count(t.title) as titles
+FROM users AS u
+LEFT JOIN tasks AS t ON t.user_id = u.id
+GROUP BY u.fullname;
